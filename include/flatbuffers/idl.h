@@ -668,7 +668,6 @@ struct IDLOptions {
         binary_schema_comments(false),
         binary_schema_builtins(false),
         binary_schema_gen_embed(false),
-        skip_flatbuffers_import(false),
         php_strict(false),
         reexport_ts_modules(true),
         js_ts_short_names(false),
