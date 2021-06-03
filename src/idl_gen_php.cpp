@@ -65,9 +65,7 @@ class PhpGenerator : public BaseGenerator {
   void BeginFile(const std::string &name_space_name, const bool needs_imports,
                  std::string *code_ptr) {
     auto &code = *code_ptr;
-    code += "<?php";
-    if (parser_.opts.php_strict) { code += " declare(strict_types=1);"; }
-    code += "\n";
+    code += "<?php declare(strict_types=1);\n";
     code = code + "// " + FlatBuffersGeneratedWarning() + "\n\n";
 
     if (!name_space_name.empty()) {
@@ -149,9 +147,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " */\n";
     code += Indent + "public static function getRootAs";
     code += struct_def.name;
-    code += "(ByteBuffer $bb)";
-    if (parser_.opts.php_strict) { code += ": " + fq_name + "\n"; }
-    code += "\n";
+    code += "(ByteBuffer $bb): " + fq_name + "\n";
     code += Indent + "{\n";
 
     code += Indent + Indent + "$obj = new " + fq_name + "();\n";
@@ -172,11 +168,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @param ByteBuffer $_bb\n";
     code += Indent + " * @return " + fq_name + "\n";
     code += Indent + " **/\n";
-    code += Indent + "public function init(";
-    if (parser_.opts.php_strict) { code += "int "; }
-    code += "$_i, ByteBuffer $_bb)";
-    if (parser_.opts.php_strict) { code += ": " + fq_name; }
-    code += "\n";
+    code += Indent + "public function init(int $_i, ByteBuffer $_bb): " + fq_name + "\n";
 
     code += Indent + "{\n";
     code += Indent + Indent + "$this->bb_pos = $_i;\n";
@@ -193,9 +185,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @return int\n";
     code += Indent + " */\n";
     code += Indent + "public function get";
-    code += MakeCamel(field.name) + "Length()";
-    if (parser_.opts.php_strict) { code += ": int"; }
-    code += "\n";
+    code += MakeCamel(field.name) + "Length(): int\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(";
     code += NumToString(field.value.offset) + ");\n";
@@ -212,9 +202,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @return string|null\n";
     code += Indent + " */\n";
     code += Indent + "public function get";
-    code += MakeCamel(field.name) + "Bytes()";
-    if (parser_.opts.php_strict) { code += ": ?string"; }
-    code += "\n";
+    code += MakeCamel(field.name) + "Bytes(): ?string\n";
     code += Indent + "{\n";
     code += Indent + Indent + "return $this->__vector_as_bytes(";
     code += NumToString(field.value.offset) + ");\n";
@@ -231,11 +219,7 @@ class PhpGenerator : public BaseGenerator {
     code += GenTypeHint(field.value.type) + "\n";
     code += Indent + " */\n";
     code += Indent + "public function " + getter;
-    code += MakeCamel(field.name) + "()";
-    if (parser_.opts.php_strict) {
-      code += ": " + GenTypeHint(field.value.type);
-    }
-    code += "\n";
+    code += MakeCamel(field.name) + "(): " + GenTypeHint(field.value.type) + "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "return ";
 
@@ -259,12 +243,9 @@ class PhpGenerator : public BaseGenerator {
     if (is_nullable) { code += "|null"; }
     code += "\n";
     code += Indent + " */\n";
-    code += Indent + "public function get" + MakeCamel(field.name) + "()";
-    if (parser_.opts.php_strict) {
-      code += ": ";
-      if (is_nullable) { code += "?"; }
-      code += GenTypeGetHint(field.value.type);
-    }
+    code += Indent + "public function get" + MakeCamel(field.name) + "(): ";
+    if (is_nullable) { code += "?"; }
+    code += GenTypeGetHint(field.value.type);
     code += "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(" +
@@ -284,10 +265,8 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + "/**\n";
     code += Indent + " * @return " + GenTypeHint(field.value.type) + "\n";
     code += Indent + " */\n";
-    code += Indent + "public function get" + MakeCamel(field.name) + "()";
-    if (parser_.opts.php_strict) {
-      code += ": " + GenTypeHint(field.value.type);
-    }
+    code += Indent + "public function get" + MakeCamel(field.name) + "(): " ;
+    code += GenTypeHint(field.value.type);
     code += "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$obj = new ";
@@ -307,9 +286,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @return " + GenTypeGetHint(field.value.type) + "|null\n";
     code += Indent + " */\n";
     code += Indent + "public function get" + MakeCamel(field.name) + "()";
-    if (parser_.opts.php_strict) {
-      code += ": ?" + GenTypeGetHint(field.value.type);
-    }
+    code += ": ?" + GenTypeGetHint(field.value.type);
     code += "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$obj = new ";
@@ -334,9 +311,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + "/**\n";
     code += Indent + " * @return string|null\n";
     code += Indent + " */\n";
-    code += Indent + "public function get" + MakeCamel(field.name) + "()";
-    if (parser_.opts.php_strict) { code += ": ?string"; }
-    code += "\n";
+    code += Indent + "public function get" + MakeCamel(field.name) + "(): ?string\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(" +
             NumToString(field.value.offset) + ");\n";
@@ -355,14 +330,8 @@ class PhpGenerator : public BaseGenerator {
         Indent + " * @return " + GenTypeGetHint(field.value.type) + "|null\n";
     code += Indent + " */\n";
     code += Indent + "public function get" + MakeCamel(field.name) + "(";
-    if (parser_.opts.php_strict) {
-      code += GenTypeGetHint(field.value.type) + " ";
-    }
-    code += "$obj)";
-    if (parser_.opts.php_strict) {
-      code += ": ?" + GenTypeGetHint(field.value.type) + " ";
-    }
-    code += "\n";
+    code += GenTypeGetHint(field.value.type) + " $obj)";
+    code += ": ?" + GenTypeGetHint(field.value.type) + "\n";
 
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(" +
@@ -383,12 +352,8 @@ class PhpGenerator : public BaseGenerator {
         Indent + " * @return " + GenTypeGetHint(field.value.type) + "|null\n";
     code += Indent + " */\n";
     code += Indent + "public function get";
-    code += MakeCamel(field.name) + "(";
-    if (parser_.opts.php_strict) { code += "int "; }
-    code += "$j)";
-    if (parser_.opts.php_strict) {
-      code += ": ?" + GenTypeGetHint(field.value.type);
-    }
+    code += MakeCamel(field.name) + "(int $j)";
+    code += ": ?" + GenTypeGetHint(field.value.type);
     code += "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(" +
@@ -451,14 +416,9 @@ class PhpGenerator : public BaseGenerator {
     if (is_nullable) { code += "|null"; }
     code += "\n";
     code += Indent + " */\n";
-    code += Indent + "public function get" + MakeCamel(field.name) + "(";
-    if (parser_.opts.php_strict) { code += "int "; }
-    code += "$j)";
-    if (parser_.opts.php_strict) { 
-      code += ": "; 
-      if (is_nullable) { code += "?"; }
-      code += GenTypeGetHint(field.value.type); 
-    }
+    code += Indent + "public function get" + MakeCamel(field.name) + "(int $j): "; 
+    if (is_nullable) { code += "?"; }
+    code += GenTypeGetHint(field.value.type); 
     code += "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(" +
@@ -489,16 +449,9 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @param int offset\n";
     code += Indent + " * @return " + GenTypeGetHint(field.value.type) + "|null\n";
     code += Indent + " */\n";
-    code += Indent + "public function get" + MakeCamel(field.name) + "(";
-    if (parser_.opts.php_strict) { code += "int "; }
-    code += "$j, ";
-    if (parser_.opts.php_strict) {
-      code += GenTypeGetHint(field.value.type) + " ";
-    }
-    code += "$obj)";
-    if (parser_.opts.php_strict) {
-      code += ": ?" + GenTypeGetHint(field.value.type);
-    }
+    code += Indent + "public function get" + MakeCamel(field.name) + "(int $j, ";
+    code += GenTypeGetHint(field.value.type) + " $obj): ?";
+    code += GenTypeGetHint(field.value.type);
     code += "\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $this->__offset(" +
@@ -526,9 +479,7 @@ class PhpGenerator : public BaseGenerator {
       } else {
         std::string &code = *code_ptr;
         code += std::string(", ");
-        if (parser_.opts.php_strict) {
-          code += GenTypeHint(field.value.type) + " ";
-        }
+        code += GenTypeHint(field.value.type) + " ";
         code += std::string("$") + nameprefix;
         code += MakeCamel(field.name, false);
       }
@@ -569,11 +520,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @return void\n";
     code += Indent + " */\n";
     code += Indent + "public static function start" + struct_def.name;
-    code += "(FlatBufferBuilder $builder)";
-    if (parser_.opts.php_strict) {
-      code += ": void";
-    }
-    code += "\n";
+    code += "(FlatBufferBuilder $builder): void\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$builder->startObject(";
     code += NumToString(struct_def.fields.vec.size());
@@ -593,14 +540,9 @@ class PhpGenerator : public BaseGenerator {
 
       if (field.deprecated) continue;
       code += ", ";
-      if (parser_.opts.php_strict) {
-        code += GenTypeHint(field.value.type) + " ";
-      }
-      code += "$" + field.name;
+      code += GenTypeHint(field.value.type) + " $" + field.name;
     }
-    code += ")";
-    if (parser_.opts.php_strict) { code += ": int"; }
-    code += "\n";
+    code += "): int\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$builder->startObject(";
     code += NumToString(struct_def.fields.vec.size());
@@ -643,12 +585,8 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + "public static function ";
     code += "add" + MakeCamel(field.name);
     code += "(FlatBufferBuilder $builder, ";
-    if (parser_.opts.php_strict) {
-      code += GenTypeHint(field.value.type) + " ";
-    }
-    code += "$" + MakeCamel(field.name, false) + ")";
-    if (parser_.opts.php_strict) { code += ": void"; }
-    code += "\n";
+    code += GenTypeHint(field.value.type) + " ";
+    code += "$" + MakeCamel(field.name, false) + "): void\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$builder->add";
     code += GenMethod(field) + "X(";
@@ -681,9 +619,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " */\n";
     code += Indent + "public static function create";
     code += MakeCamel(field.name);
-    code += "Vector(FlatBufferBuilder $builder, array $data)";
-    if (parser_.opts.php_strict) { code += ": int"; }
-    code += "\n";
+    code += "Vector(FlatBufferBuilder $builder, array $data): int\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$builder->startVector(";
     code += NumToString(elem_size);
@@ -729,9 +665,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + " * @return int table offset\n";
     code += Indent + " */\n";
     code += Indent + "public static function end" + struct_def.name;
-    code += "(FlatBufferBuilder $builder)";
-    if (parser_.opts.php_strict) { code += ": int"; }
-    code += "\n";
+    code += "(FlatBufferBuilder $builder): int\n";
     code += Indent + "{\n";
     code += Indent + Indent + "$o = $builder->endObject();\n";
 
@@ -820,9 +754,7 @@ class PhpGenerator : public BaseGenerator {
         std::string &code = *code_ptr;
         code += Indent + "public static function add";
         code += MakeCamel(field.name);
-        code += "(FlatBufferBuilder $builder, int $offset)";
-        if (parser_.opts.php_strict) { code += ": void"; }
-        code += "\n";
+        code += "(FlatBufferBuilder $builder, int $offset): void\n";
         code += Indent + "{\n";
         code += Indent + Indent + "$builder->addOffsetX(";
         code += NumToString(offset) + ", $offset, 0);\n";
@@ -854,9 +786,7 @@ class PhpGenerator : public BaseGenerator {
       if (parser_.file_identifier_.length()) {
         // Return the identifier
         code += Indent + "public static function " + struct_def.name;
-        code += "Identifier()";
-        if (parser_.opts.php_strict) { code += ": string"; }
-        code += "\n";
+        code += "Identifier(): string\n";
         code += Indent + "{\n";
         code += Indent + Indent + "return \"";
         code += parser_.file_identifier_ + "\";\n";
@@ -864,9 +794,7 @@ class PhpGenerator : public BaseGenerator {
 
         // Check if a buffer has the identifier.
         code += Indent + "public static function " + struct_def.name;
-        code += "BufferHasIdentifier(ByteBuffer $buf)";
-        if (parser_.opts.php_strict) { code += ": bool"; }
-        code += "\n";
+        code += "BufferHasIdentifier(ByteBuffer $buf): bool\n";
         code += Indent + "{\n";
         code += Indent + Indent + "return self::";
         code += "__has_identifier($buf, self::";
@@ -877,9 +805,7 @@ class PhpGenerator : public BaseGenerator {
       if (parser_.file_extension_.length()) {
         // Return the extension
         code += Indent + "public static function " + struct_def.name;
-        code += "Extension()";
-        if (parser_.opts.php_strict) { code += ": string"; }
-        code += "\n";
+        code += "Extension(): string\n";
         code += Indent + "{\n";
         code += Indent + Indent + "return \"" + parser_.file_extension_;
         code += "\";\n";
@@ -932,18 +858,12 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + ");\n\n";
 
     code += Indent + "/** @return array<int,string> */\n";
-    code += Indent + "public static function getNames()";
-    if (parser_.opts.php_strict) { code += ": array"; }
-    code += "\n";
+    code += Indent + "public static function getNames(): array\n";
     code += Indent + "{\n";
     code += Indent + Indent + "return self::$names;\n";
     code += Indent + "}\n\n";
 
-    code += Indent + "public static function name(";
-    if (parser_.opts.php_strict) { code += "int "; }
-    code += "$e)";
-    if (parser_.opts.php_strict) { code += ": string"; }
-    code += "\n";
+    code += Indent + "public static function name(int $e): string\n";
     code += Indent + "{\n";
     code += Indent + Indent + "if (!isset(self::$names[$e])) {\n";
     code += Indent + Indent + Indent + "throw new \\OutOfRangeException(";
@@ -1066,9 +986,7 @@ class PhpGenerator : public BaseGenerator {
     code += Indent + "public static function create" + struct_def.name;
     code += "(FlatBufferBuilder $builder";
     StructBuilderArgs(struct_def, "", code_ptr);
-    code += ")";
-    if (parser_.opts.php_strict) { code += ": int"; }
-    code += "\n";
+    code += "): int\n";
     code += Indent + "{\n";
 
     StructBuilderBody(struct_def, "", code_ptr);

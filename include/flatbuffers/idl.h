@@ -576,7 +576,6 @@ struct IDLOptions {
   bool binary_schema_gen_embed;
   std::string go_import;
   std::string go_namespace;
-  bool php_strict;
   bool reexport_ts_modules;
   bool js_ts_short_names;
   bool protobuf_ascii_alike;
@@ -668,7 +667,6 @@ struct IDLOptions {
         binary_schema_comments(false),
         binary_schema_builtins(false),
         binary_schema_gen_embed(false),
-        php_strict(false),
         reexport_ts_modules(true),
         js_ts_short_names(false),
         protobuf_ascii_alike(false),

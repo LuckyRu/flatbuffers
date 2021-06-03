@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 /*
  * Copyright 2015 Google Inc.
  *
@@ -32,20 +32,12 @@ abstract class Table
     {
     }
 
-    /**
-     * @param int $pos
-     * @return void
-     */
-    public function setByteBufferPos($pos)
+    public function setByteBufferPos(int $pos): void
     {
         $this->bb_pos = $pos;
     }
 
-    /**
-     * @param ByteBuffer $bb
-     * @return void
-     */
-    public function setByteBuffer(ByteBuffer $bb)
+    public function setByteBuffer(ByteBuffer $bb): void
     {
         $this->bb = $bb;
     }
@@ -53,31 +45,23 @@ abstract class Table
     /**
      * returns actual vtable offset
      *
-     * @param int $vtable_offset
      * @return int offset > 0 means exist value. 0 means not exist
      */
-    protected function __offset($vtable_offset)
+    protected function __offset(int $vtable_offset): int
     {
         $vtable = $this->bb_pos - $this->bb->getInt($this->bb_pos);
         return $vtable_offset < $this->bb->getShort($vtable) ? $this->bb->getShort($vtable + $vtable_offset) : 0;
     }
 
-    /**
-     * @param int $offset
-     * @return int
-     */
-    protected function __indirect($offset)
+    protected function __indirect(int $offset): int
     {
         return $offset + $this->bb->getInt($offset);
     }
 
     /**
      * fetch utf8 encoded string.
-     *
-     * @param int $offset
-     * @return string
      */
-    protected function __string($offset)
+    protected function __string(int $offset): string
     {
         $offset += $this->bb->getInt($offset);
         $len = $this->bb->getInt($offset);
@@ -85,34 +69,21 @@ abstract class Table
         return substr($this->bb->_buffer, $startPos, $len);
     }
 
-    /**
-     * @param int $offset
-     * @return int
-     */
-    protected function __vector_len($offset)
+    protected function __vector_len(int $offset): int
     {
         $offset += $this->bb_pos;
         $offset += $this->bb->getInt($offset);
         return $this->bb->getInt($offset);
     }
 
-    /**
-     * @param int $offset
-     * @return int
-     */
-    protected function __vector($offset)
+    protected function __vector(int $offset): int
     {
         $offset += $this->bb_pos;
         // data starts after the length
         return $offset + $this->bb->getInt($offset) + Constants::SIZEOF_INT;
     }
 
-    /**
-     * @param int $vector_offset
-     * @param int $elem_size
-     * @return string|bool|null
-     */
-    protected function __vector_as_bytes($vector_offset, $elem_size=1)
+    protected function __vector_as_bytes(int $vector_offset, int $elem_size=1): ?string
     {
         $o = $this->__offset($vector_offset);
         if ($o == 0) {
@@ -122,12 +93,7 @@ abstract class Table
         return substr($this->bb->_buffer, $this->__vector($o), $this->__vector_len($o) * $elem_size);
     }
 
-    /**
-     * @param Table $table
-     * @param int $offset
-     * @return Table
-     */
-    protected function __union(Table $table, $offset)
+    protected function __union(Table $table, int $offset): Table
     {
         $offset += $this->bb_pos;
         $table->setByteBufferPos($offset + $this->bb->getInt($offset));
@@ -136,18 +102,15 @@ abstract class Table
     }
 
     /**
-     * @param ByteBuffer $bb
-     * @param string $ident
-     * @return bool
-     * @throws \ArgumentException
+     * @throws \InvalidArgumentException
      */
-    protected static function __has_identifier(ByteBuffer $bb, $ident)
+    protected static function __has_identifier(ByteBuffer $bb, string $ident): bool
     {
         if (strlen($ident) != Constants::FILE_IDENTIFIER_LENGTH) {
-            throw new \ArgumentException("FlatBuffers: file identifier must be length "  . Constants::FILE_IDENTIFIER_LENGTH);
+            throw new \InvalidArgumentException("FlatBuffers: file identifier must be length "  . Constants::FILE_IDENTIFIER_LENGTH);
         }
 
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < Constants::FILE_IDENTIFIER_LENGTH; $i++) {
             if ($ident[$i] != $bb->get($bb->getPosition() + Constants::SIZEOF_INT + $i)) {
                 return false;
             }

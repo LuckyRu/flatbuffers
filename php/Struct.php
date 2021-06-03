@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 /*
  * Copyright 2015 Google Inc.
  *
@@ -29,20 +29,12 @@ abstract class Struct
      */
     protected $bb;
 
-    /**
-     * @param int $pos
-     * @return void
-     */
-    public function setByteBufferPos($pos)
+    public function setByteBufferPos(int $pos): void
     {
         $this->bb_pos = $pos;
     }
 
-    /**
-     * @param ByteBuffer $bb
-     * @return void
-     */
-    public function setByteBuffer(ByteBuffer $bb)
+    public function setByteBuffer(ByteBuffer $bb): void
     {
         $this->bb = $bb;
     }
