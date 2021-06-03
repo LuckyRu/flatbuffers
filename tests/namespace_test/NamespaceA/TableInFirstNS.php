@@ -12,11 +12,11 @@ class TableInFirstNS extends Table
 {
     /**
      * @param ByteBuffer $bb
-     * @return TableInFirstNS
+     * @return \NamespaceA\TableInFirstNS
      */
     public static function getRootAsTableInFirstNS(ByteBuffer $bb)
     {
-        $obj = new TableInFirstNS();
+        $obj = new \NamespaceA\TableInFirstNS();
         return ($obj->init($bb->getInt($bb->getPosition()) + $bb->getPosition(), $bb));
     }
 
@@ -32,15 +32,18 @@ class TableInFirstNS extends Table
         return $this;
     }
 
+    /**
+     * @return \NamespaceA\NamespaceB\TableInNestedNS|null
+     */
     public function getFooTable()
     {
-        $obj = new TableInNestedNS();
+        $obj = new \NamespaceA\NamespaceB\TableInNestedNS();
         $o = $this->__offset(4);
-        return $o != 0 ? $obj->init($this->__indirect($o + $this->bb_pos), $this->bb) : 0;
+        return $o != 0 ? $obj->init($this->__indirect($o + $this->bb_pos), $this->bb) : null;
     }
 
     /**
-     * @return sbyte
+     * @return int
      */
     public function getFooEnum()
     {
@@ -68,7 +71,7 @@ class TableInFirstNS extends Table
 
     public function getFooStruct()
     {
-        $obj = new StructInNestedNS();
+        $obj = new \NamespaceA\NamespaceB\StructInNestedNS();
         $o = $this->__offset(12);
         return $o != 0 ? $obj->init($o + $this->bb_pos, $this->bb) : 0;
     }
@@ -84,7 +87,7 @@ class TableInFirstNS extends Table
 
     /**
      * @param FlatBufferBuilder $builder
-     * @return TableInFirstNS
+     * @return int
      */
     public static function createTableInFirstNS(FlatBufferBuilder $builder, $foo_table, $foo_enum, $foo_union_type, $foo_union, $foo_struct)
     {
@@ -100,7 +103,7 @@ class TableInFirstNS extends Table
 
     /**
      * @param FlatBufferBuilder $builder
-     * @param int
+     * @param int $fooTable
      * @return void
      */
     public static function addFooTable(FlatBufferBuilder $builder, $fooTable)
@@ -110,7 +113,7 @@ class TableInFirstNS extends Table
 
     /**
      * @param FlatBufferBuilder $builder
-     * @param sbyte
+     * @param int $fooEnum
      * @return void
      */
     public static function addFooEnum(FlatBufferBuilder $builder, $fooEnum)
